@@ -1,0 +1,20 @@
+spec: v0.6
+
+runtime: base:latest
+
+rootfs: ./Dockerfile
+
+cmd: ["/rust-server"]
+
+targets:
+  - name: rust-server-xen
+    architecture: x86_64
+    platform: xen
+
+  - name: rust-server-qemu
+    architecture: x86_64
+    platform: qemu
+
+  - name: rust-server-fc
+    architecture: x86_64
+    platform: fc
