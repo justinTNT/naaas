@@ -1,4 +1,4 @@
-# NAAAS: Network-as-a-Service
+# NAAAS: Not-Another-as-a-Service
 
 > Thin infrastructure wrapper for monolithic applications using unikernels
 
