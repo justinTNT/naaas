@@ -2,12 +2,13 @@
 
 > Thin infrastructure wrapper for monolithic applications using unikernels
 
-## Current Status: Sprint 1 Ready 🚀
+## Current Status: Sprint 1 Development 🚧
 
 ✅ **Technology Proven**: Unikraft + Rust + Tokio/Hyper working on AWS  
 ✅ **Production Validated**: HTTP server live at http://3.1.210.183:3000  
 ✅ **Documentation Complete**: Full project vision and roadmap  
-🚧 **Next**: Build `naaas-server` control plane (Sprint 1)
+⚠️ **Current Gap**: Main components lack unit tests - need test infrastructure  
+🚧 **Active**: Building `naaas-server` control plane (Sprint 1)
 
 ## Quick Orientation
 
@@ -15,7 +16,8 @@
 - **`notes/roadmap.md`** - Sprint-based development plan  
 - **`notes/naaas_requirements.md`** - Technical specs for all components
 - **`unikraft-hyper-poc/`** - Working HTTP server unikernel (production tested)
-- **`*_poc*.md`** - POC journey (Hermit→Unikraft pivot, results)
+- **`unikraft_poc2_results.md`** - POC journey (Hermit→Unikraft pivot, results)
+- **`old_docs/`** - Archived planning docs and analysis from earlier phases
 
 ## What NAAAS Does
 

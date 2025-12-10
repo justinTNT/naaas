@@ -24,13 +24,16 @@ The dashboard's purpose is ongoing monitoring of the deployed shims.
 ---
 ## Development Methodology: Iterative Vertical Slices
 
-### Phase 0: Pre-flight & Setup
-*   **Task 1: Hermit "Hello, Hyper!" PoC:** Validate the core technology stack by building and running a minimal Hermit unikernel. (Reference: `hermit_poc_plan.md`)
-*   **Task 2: Local Ghost CMS Setup:** Have a local, standard Ghost CMS instance running as our target monolith.
+### Phase 0: Pre-flight & Setup ✅ COMPLETED
+*   ✅ **Technology Validation:** Successfully pivoted from Hermit to Unikraft, deployed production HTTP server on AWS
+*   ✅ **Target Application:** Ghost CMS validated as target monolith via integration testing  
+*   ✅ **Infrastructure Proven:** Working unikernel at http://3.1.210.183:3000 demonstrates technology stack
 
-### Sprint 1: The "Launch Unikernel" Slice
+### Sprint 1: The "Launch Unikernel" Slice 🚧 CURRENT
 *   **Goal:** `naaas-ctl` can command the `naaas-server` to launch the "Hello, Hyper!" unikernel.
 *   **Key Components:** Minimal `naaas-server` with a `/deploy` API; minimal `naaas-ctl` with a `deploy` command; integration with the hypervisor to start a process.
+*   **Status:** Basic Rust project structure created, requires implementation
+*   **Current Gap:** Zero unit tests - needs comprehensive test infrastructure  
 *   **Feedback:** A working `naaas-ctl deploy` command that successfully launches a unikernel.
 
 ### Sprint 2: The "Transparent Proxy" Slice

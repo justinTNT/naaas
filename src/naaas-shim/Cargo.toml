@@ -1,0 +1,20 @@
+[package]
+name = "naaas-shim"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+hyper = { version = "0.14", features = ["full"] }
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+clap = { version = "4.0", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+reqwest = { version = "0.11", features = ["json"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+assert_matches = "1.5"
+tempfile = "3.8"
