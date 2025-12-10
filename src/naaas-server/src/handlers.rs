@@ -115,12 +115,8 @@ pub async fn handle_health() -> Result<Response<Body>, anyhow::Error> {
         .body(Body::from("{\"status\": \"healthy\", \"service\": \"naaas-server\"}"))?)
 }
 
-/// Spawn a unikernel process (currently spawns regular binaries for Sprint 1)
-async fn spawn_unikernel_process(
-    deploy_req: &DeployRequest, 
-    port: u16
-) -> Result<u32, anyhow::Error> {
-    // Build command arguments for the unikernel
+/// Build command arguments for unikernel process
+pub fn build_unikernel_args(deploy_req: &DeployRequest, port: u16) -> Vec<String> {
     let mut cmd_args = vec![
         "--port".to_string(), 
         port.to_string(),
@@ -137,6 +133,16 @@ async fn spawn_unikernel_process(
         cmd_args.push("--config".to_string());
         cmd_args.push(config.clone());
     }
+    
+    cmd_args
+}
+
+/// Spawn a unikernel process (currently spawns regular binaries for Sprint 1)
+async fn spawn_unikernel_process(
+    deploy_req: &DeployRequest, 
+    port: u16
+) -> Result<u32, anyhow::Error> {
+    let cmd_args = build_unikernel_args(deploy_req, port);
     
     // Spawn the process
     let cmd = Command::new(&deploy_req.unikernel_path)
@@ -298,5 +304,147 @@ mod tests {
         let body_str = String::from_utf8(body_bytes.to_vec()).unwrap();
         assert!(body_str.contains("error"), "Response should contain error message");
         assert!(body_str.contains("name"), "Error should mention the name field");
+    }
+
+    #[test]
+    fn test_build_unikernel_args_with_basic_request() {
+        // Setup: Basic deploy request with only required fields
+        let request = DeployRequest {
+            name: "test-app".to_string(),
+            unikernel_path: "/path/to/unikernel".to_string(),
+            port: None,
+            upstream_url: None,
+            app_config: None,
+        };
+
+        // Action: Build command arguments
+        let args = build_unikernel_args(&request, 3001);
+
+        // Assert: Contains port arguments only
+        assert_eq!(args, vec!["--port", "3001"]);
+    }
+
+    #[test]
+    fn test_build_unikernel_args_with_upstream_url() {
+        // Setup: Deploy request with upstream URL
+        let request = DeployRequest {
+            name: "proxy-app".to_string(),
+            unikernel_path: "/path/to/shim".to_string(),
+            port: None,
+            upstream_url: Some("http://localhost:2368".to_string()),
+            app_config: None,
+        };
+
+        // Action: Build command arguments
+        let args = build_unikernel_args(&request, 3002);
+
+        // Assert: Contains port and upstream arguments
+        assert_eq!(args, vec![
+            "--port", "3002",
+            "--upstream", "http://localhost:2368"
+        ]);
+    }
+
+    #[test]
+    fn test_build_unikernel_args_with_app_config() {
+        // Setup: Deploy request with app config
+        let request = DeployRequest {
+            name: "config-app".to_string(),
+            unikernel_path: "/path/to/app".to_string(),
+            port: None,
+            upstream_url: None,
+            app_config: Some(r#"{"name":"Test App","color":"blue"}"#.to_string()),
+        };
+
+        // Action: Build command arguments
+        let args = build_unikernel_args(&request, 4000);
+
+        // Assert: Contains port and config arguments
+        assert_eq!(args, vec![
+            "--port", "4000",
+            "--config", r#"{"name":"Test App","color":"blue"}"#
+        ]);
+    }
+
+    #[test]
+    fn test_build_unikernel_args_with_all_options() {
+        // Setup: Deploy request with all optional fields
+        let request = DeployRequest {
+            name: "full-app".to_string(),
+            unikernel_path: "/path/to/full-app".to_string(),
+            port: Some(5000), // This will be overridden by the function parameter
+            upstream_url: Some("https://api.example.com".to_string()),
+            app_config: Some(r#"{"name":"Full App","theme":"dark","features":["auth","logs"]}"#.to_string()),
+        };
+
+        // Action: Build command arguments
+        let args = build_unikernel_args(&request, 6000);
+
+        // Assert: Contains all arguments in correct order
+        assert_eq!(args, vec![
+            "--port", "6000",
+            "--upstream", "https://api.example.com",
+            "--config", r#"{"name":"Full App","theme":"dark","features":["auth","logs"]}"#
+        ]);
+    }
+
+    #[test]
+    fn test_build_unikernel_args_with_complex_upstream_url() {
+        // Setup: Deploy request with complex upstream URL
+        let request = DeployRequest {
+            name: "complex-proxy".to_string(),
+            unikernel_path: "/path/to/proxy".to_string(),
+            port: None,
+            upstream_url: Some("https://cms.internal.company.com:8443/api/v2".to_string()),
+            app_config: None,
+        };
+
+        // Action: Build command arguments
+        let args = build_unikernel_args(&request, 7001);
+
+        // Assert: Complex upstream URL is preserved exactly
+        assert_eq!(args, vec![
+            "--port", "7001",
+            "--upstream", "https://cms.internal.company.com:8443/api/v2"
+        ]);
+    }
+
+    #[test]
+    fn test_build_unikernel_args_with_json_config_containing_quotes() {
+        // Setup: Deploy request with complex JSON config
+        let request = DeployRequest {
+            name: "json-app".to_string(),
+            unikernel_path: "/path/to/app".to_string(),
+            port: None,
+            upstream_url: None,
+            app_config: Some(r#"{"title":"App \"with quotes\"","description":"Complex JSON"}"#.to_string()),
+        };
+
+        // Action: Build command arguments
+        let args = build_unikernel_args(&request, 8000);
+
+        // Assert: JSON with quotes is preserved
+        assert_eq!(args, vec![
+            "--port", "8000",
+            "--config", r#"{"title":"App \"with quotes\"","description":"Complex JSON"}"#
+        ]);
+    }
+
+    #[test]
+    fn test_build_unikernel_args_port_override() {
+        // Setup: Deploy request with port specified in request
+        let request = DeployRequest {
+            name: "port-test".to_string(),
+            unikernel_path: "/test/app".to_string(),
+            port: Some(9999), // Request specifies port 9999
+            upstream_url: None,
+            app_config: None,
+        };
+
+        // Action: Build args with different port parameter
+        let args = build_unikernel_args(&request, 8888);
+
+        // Assert: Function parameter overrides request port
+        assert_eq!(args, vec!["--port", "8888"]);
     }
 }

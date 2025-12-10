@@ -220,4 +220,113 @@ mod tests {
         // Assert: Default server URL is used
         assert_eq!(cli.get_server_url(), "http://localhost:8080");
     }
+
+    #[test]
+    fn test_cli_deploy_command_with_upstream_only() {
+        // Setup: Deploy command with upstream but no config
+        let args = vec![
+            "naaas-ctl",
+            "deploy",
+            "--name", "proxy-only",
+            "--unikernel", "/path/to/shim",
+            "--upstream", "http://backend-service:8080"
+        ];
+
+        // Action: Parse the arguments
+        let cli = Cli::parse_from_args(args).unwrap();
+
+        // Assert: Upstream is set, config is None
+        match cli.command {
+            Commands::Deploy { name, unikernel, port, upstream, config } => {
+                assert_eq!(name, "proxy-only");
+                assert_eq!(unikernel, "/path/to/shim");
+                assert_eq!(port, None);
+                assert_eq!(upstream, Some("http://backend-service:8080".to_string()));
+                assert_eq!(config, None);
+            }
+            _ => panic!("Expected Deploy command"),
+        }
+    }
+
+    #[test]
+    fn test_cli_deploy_command_with_config_only() {
+        // Setup: Deploy command with config but no upstream
+        let args = vec![
+            "naaas-ctl",
+            "deploy",
+            "--name", "config-only",
+            "--unikernel", "/path/to/app",
+            "--config", r#"{"theme":"dark","features":["logging"]}"#
+        ];
+
+        // Action: Parse the arguments
+        let cli = Cli::parse_from_args(args).unwrap();
+
+        // Assert: Config is set, upstream is None
+        match cli.command {
+            Commands::Deploy { name, unikernel, port, upstream, config } => {
+                assert_eq!(name, "config-only");
+                assert_eq!(unikernel, "/path/to/app");
+                assert_eq!(port, None);
+                assert_eq!(upstream, None);
+                assert_eq!(config, Some(r#"{"theme":"dark","features":["logging"]}"#.to_string()));
+            }
+            _ => panic!("Expected Deploy command"),
+        }
+    }
+
+    #[test]
+    fn test_cli_deploy_command_with_complex_json_config() {
+        // Setup: Deploy command with complex JSON configuration
+        let args = vec![
+            "naaas-ctl",
+            "deploy",
+            "--name", "complex-app",
+            "--unikernel", "/complex/app",
+            "--port", "5000",
+            "--upstream", "https://api.complex.example.com/v2",
+            "--config", r#"{"name":"Complex App","ui":{"theme":"dark","sidebar":true},"features":{"auth":true,"analytics":false}}"#
+        ];
+
+        // Action: Parse the arguments
+        let cli = Cli::parse_from_args(args).unwrap();
+
+        // Assert: Complex JSON is preserved correctly
+        match cli.command {
+            Commands::Deploy { name, unikernel, port, upstream, config } => {
+                assert_eq!(name, "complex-app");
+                assert_eq!(unikernel, "/complex/app");
+                assert_eq!(port, Some(5000));
+                assert_eq!(upstream, Some("https://api.complex.example.com/v2".to_string()));
+                
+                let expected_config = r#"{"name":"Complex App","ui":{"theme":"dark","sidebar":true},"features":{"auth":true,"analytics":false}}"#;
+                assert_eq!(config, Some(expected_config.to_string()));
+            }
+            _ => panic!("Expected Deploy command"),
+        }
+    }
+
+    #[test] 
+    fn test_cli_deploy_command_with_special_characters_in_config() {
+        // Setup: Deploy command with JSON containing special characters
+        let args = vec![
+            "naaas-ctl",
+            "deploy",
+            "--name", "special-chars",
+            "--unikernel", "/path/to/app",
+            "--config", r#"{"title":"App with \"quotes\" & symbols","description":"Testing: chars like @#$%"}"#
+        ];
+
+        // Action: Parse the arguments
+        let cli = Cli::parse_from_args(args).unwrap();
+
+        // Assert: Special characters are preserved
+        match cli.command {
+            Commands::Deploy { config, .. } => {
+                let expected = r#"{"title":"App with \"quotes\" & symbols","description":"Testing: chars like @#$%"}"#;
+                assert_eq!(config, Some(expected.to_string()));
+            }
+            _ => panic!("Expected Deploy command"),
+        }
+    }
 }
