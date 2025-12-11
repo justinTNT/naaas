@@ -7,5 +7,6 @@ sidecar/
 *.swo
 
 # Build artifacts
+build/
 target/
 *.lock
