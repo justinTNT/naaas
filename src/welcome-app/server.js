@@ -17,6 +17,10 @@ app.use((req, res, next) => {
     next();
 });
 
+// Middleware to parse JSON bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Main welcome page
 app.get('/', (req, res) => {
     const uptime = Math.floor((Date.now() - startTime) / 1000);
@@ -140,9 +144,26 @@ app.get('/', (req, res) => {
             </div>
             
             <div class="info-section">
+                <h3>Integration Testing</h3>
                 <p><strong>This is a tenant-specific Express.js application running behind the NAAAS shim proxy.</strong></p>
                 <p>Each tenant gets their own dedicated instance with custom configuration.</p>
                 <p>If you can see this page with the correct tenant name and colors, your NAAAS integration is working correctly!</p>
+                
+                <h4>Test Endpoints (for shim integration testing):</h4>
+                <ul>
+                    <li><a href="/health" target="_blank">/health</a> - Health check with tenant info</li>
+                    <li><a href="/api/info" target="_blank">/api/info</a> - Detailed system information</li>
+                    <li><a href="/styles.css" target="_blank">/styles.css</a> - Tenant-specific CSS</li>
+                    <li><a href="/search?q=test&limit=10" target="_blank">/search?q=test&limit=10</a> - Query parameter test</li>
+                    <li><a href="/api/data" target="_blank">/api/data</a> - JSON API response</li>
+                    <li><a href="/api/status" target="_blank">/api/status</a> - Plain text response</li>
+                    <li><a href="/error" target="_blank">/error</a> - Simulated server error</li>
+                    <li><strong>POST /api/test</strong> - Test request body forwarding</li>
+                    <li><strong>PUT /api/test</strong> - Test PUT method forwarding</li>
+                    <li><strong>POST /api/upload</strong> - File upload simulation</li>
+                </ul>
+                
+                <p><strong>Shim Config Test:</strong> Visit <code>/config</code> to see NAAAS shim configuration</p>
             </div>
         </div>
     </body>
@@ -190,6 +211,152 @@ app.get('/api/info', (req, res) => {
             NAAAS_REGION: process.env.NAAAS_REGION
         },
         headers: req.headers
+    });
+});
+
+// POST/PUT endpoint to test request body forwarding through shim
+app.post('/api/test', (req, res) => {
+    res.json({
+        message: 'POST request received successfully',
+        tenant: tenantName,
+        received_body: req.body,
+        content_type: req.headers['content-type'],
+        method: req.method,
+        headers: req.headers,
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.put('/api/test', (req, res) => {
+    res.json({
+        message: 'PUT request received successfully', 
+        tenant: tenantName,
+        received_body: req.body,
+        content_type: req.headers['content-type'],
+        method: req.method,
+        headers: req.headers,
+        timestamp: new Date().toISOString()
+    });
+});
+
+// CSS endpoint to test static resource forwarding through shim
+app.get('/styles.css', (req, res) => {
+    res.setHeader('content-type', 'text/css');
+    res.send(`
+/* Tenant-specific CSS for ${tenantName} */
+body { 
+    background: ${backgroundColor}; 
+    font-family: Arial, sans-serif;
+}
+
+h1 { 
+    color: ${primaryColor}; 
+    border-bottom: 2px solid ${primaryColor};
+}
+
+.tenant-badge {
+    background: ${primaryColor};
+    color: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 8px;
+}
+    `);
+});
+
+// Search endpoint to test query parameter forwarding
+app.get('/search', (req, res) => {
+    res.json({
+        message: 'Search endpoint working',
+        tenant: tenantName,
+        query_params: req.query,
+        url: req.url,
+        path: req.path,
+        query_string: req.url.split('?')[1] || null,
+        headers: req.headers,
+        search_results: Object.keys(req.query).length > 0 ? 
+            `Found ${Object.keys(req.query).length} search parameters for tenant ${tenantName}` :
+            'No search parameters provided'
+    });
+});
+
+// Error endpoint to test shim error handling
+app.get('/error', (req, res) => {
+    console.log(`Simulating server error for tenant ${tenantName}`);
+    res.status(500).json({
+        error: "Simulated server error",
+        tenant: tenantName,
+        message: "This error is intentional for testing shim error handling",
+        timestamp: new Date().toISOString()
+    });
+});
+
+// JSON API endpoint to test different content types
+app.get('/api/data', (req, res) => {
+    res.json({
+        tenant: tenantName,
+        data: {
+            users: [
+                {id: 1, name: 'Alice', tenant: tenantName},
+                {id: 2, name: 'Bob', tenant: tenantName}
+            ],
+            config: {
+                theme: {
+                    background: backgroundColor,
+                    primary: primaryColor
+                },
+                features: ['proxy_test', 'tenant_isolation', 'json_api']
+            }
+        },
+        meta: {
+            timestamp: new Date().toISOString(),
+            hostname: os.hostname(),
+            version: '1.0.0'
+        }
+    });
+});
+
+// Text endpoint to test plain text responses
+app.get('/api/status', (req, res) => {
+    res.setHeader('content-type', 'text/plain');
+    res.send(`NAAAS Tenant Status
+Tenant: ${tenantName}
+Hostname: ${os.hostname()}
+Uptime: ${Math.floor((Date.now() - startTime) / 1000)} seconds
+Status: Active
+Theme: ${backgroundColor} / ${primaryColor}
+Time: ${new Date().toISOString()}
+`);
+});
+
+// File upload simulation endpoint
+app.post('/api/upload', (req, res) => {
+    res.json({
+        message: 'File upload endpoint (simulation)',
+        tenant: tenantName,
+        received_content_type: req.headers['content-type'],
+        content_length: req.headers['content-length'] || '0',
+        body_size: JSON.stringify(req.body).length,
+        note: 'This would handle file uploads in a real application'
+    });
+});
+
+// WebSocket simulation endpoint (HTTP upgrade test)
+app.get('/api/websocket', (req, res) => {
+    res.json({
+        message: 'WebSocket simulation endpoint',
+        tenant: tenantName,
+        upgrade_header: req.headers['upgrade'] || null,
+        connection_header: req.headers['connection'] || null,
+        note: 'This would handle WebSocket upgrades in a real application'
     });
 });
 
