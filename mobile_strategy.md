@@ -1,0 +1,171 @@
+# Mobile Strategy: Anti-Social Creator Tools
+
+## Core Vision
+**Mobile app as publishing tool → Personal branded website**
+
+Instead of traditional social media (shared feed, algorithmic discovery), create mobile apps that deploy personal websites with direct creator-audience relationships.
+
+## Example: Dustagram
+```
+User downloads Dustagram app
+→ Signs up as "alice"
+→ App deploys alice.dustagram.com
+→ Mobile app becomes CMS for alice's photo site
+→ Friends visit alice.dustagram.com (real website)
+→ Alice owns the content, audience, and relationship
+```
+
+## Key Insight: Inverted Social Media
+**Traditional Social Media:**
+- Your content feeds their algorithm
+- You compete for attention in shared feed
+- Platform controls discovery and monetization
+- Your audience can be taken away
+
+**NAAAS-Powered Creator Apps:**
+- **Your domain, your content, your rules**
+- **Direct relationships** - people bookmark your site
+- **No algorithm** deciding who sees your work  
+- **You own the audience** - they visit YOUR website
+
+## Technical Architecture
+
+### Mobile App Responsibilities
+- **Content creation** - camera, editing, writing tools
+- **Publishing interface** - post to personal site
+- **Site management** - themes, settings, basic customization
+- **NAAAS API integration** - deploy/manage personal backend
+
+### NAAAS Platform Responsibilities  
+- **Infrastructure deployment** - personal site per user
+- **Domain management** - subdomain assignment
+- **Authentication** - unified commenting across sites
+- **Routing/SSL** - technical website operations
+
+### User Responsibilities
+- **Content ownership** - their site, their rules
+- **Audience building** - direct marketing, word of mouth
+- **Monetization** - direct patron/customer relationships
+
+## Design Philosophy: Right Boundaries
+
+**Clean separation that restores creator ownership:**
+- **NAAAS**: Infrastructure layer (invisible to end users)
+- **Mobile app**: Publishing tools (creator experience)
+- **Personal site**: Content and audience (user owns this)
+
+**No compromises forced by shared infrastructure:**
+- Design for single-user perfect experience
+- No multi-tenant complexity in app logic
+- Personal branding and customization possible
+- Direct creator-audience relationships
+
+## Market Positioning
+
+### Target Applications
+- **Photography portfolios** - personal showcase sites
+- **Artist galleries** - creative work display
+- **Personal blogs** - mobile-first writing
+- **Small business sites** - local shop presence
+- **Event pages** - weddings, gatherings, announcements
+- **Creator portfolios** - designers, writers, makers
+
+### Value Propositions
+- **Anti-viral design** - quality content over engagement optimization
+- **Creator ownership** - your domain, your audience
+- **Mobile convenience** - publish from anywhere
+- **No platform dependency** - can't be de-platformed
+- **Direct monetization** - no platform taking percentage
+
+## Technical Concerns
+
+### Mobile Development Risk
+**Concern**: Limited mobile app development experience
+**Mitigation**: 
+- Start with React Native + Expo (leverage web skills)
+- Focus on simple publishing flows initially
+- Progressive enhancement of mobile features
+- Consider PWA as fallback if native becomes too complex
+
+### Architecture Validation
+**Concern**: Mobile-triggered deployments not fully tested
+**Mitigation**:
+- Sprint 2.5: Build minimal unikernel for testing
+- Sprint 3: Validate API works with programmatic calls
+- Create mobile app mockup that calls existing API
+- Test deployment flow before building full mobile UX
+
+## Development Strategy
+
+### Phase 1: Prove the API (Sprints 2.5-3)
+- Build NAAAS platform with CLI interface
+- Validate programmatic deployment via API calls
+- Ensure mobile app can trigger same deployments as CLI
+
+### Phase 2: Mobile MVP
+- Simple React Native app that calls NAAAS API
+- Basic content creation (text/photo posting)
+- Prove mobile → personal website workflow
+
+### Phase 3: Creator Tools
+- Enhanced mobile publishing interface
+- Site customization options
+- Multi-media content support
+
+## Success Metrics
+
+### Technical Validation
+- Mobile app can successfully trigger site deployments
+- Personal sites load correctly from mobile-deployed content
+- Performance acceptable for single-user websites
+- Cost model works for per-user infrastructure
+
+### Product Validation
+- Creators prefer personal sites over social media posting
+- Audiences visit personal sites regularly
+- Creator-audience relationships strengthen over time
+- Monetization improves with direct relationships
+
+## Risks and Mitigation
+
+### Mobile Complexity Risk
+- **Risk**: Mobile app development becomes bottleneck
+- **Mitigation**: Keep mobile app simple, focus on web publishing
+- **Fallback**: PWA or web-based mobile interface
+
+### Market Education Risk
+- **Risk**: Users expect social media features (feeds, discovery)
+- **Mitigation**: Clear positioning as alternative to social media
+- **Strategy**: Target creators frustrated with platforms
+
+### Infrastructure Cost Risk
+- **Risk**: Per-user infrastructure too expensive
+- **Mitigation**: Optimize NAAAS costs, prove value justifies price
+- **Strategy**: Target creators willing to pay for ownership
+
+## Key Decision Points
+
+### Mobile Platform Choice
+- **Decision**: React Native + Expo for initial development
+- **Rationale**: Leverage existing web skills, rapid prototyping
+- **Review point**: After MVP, consider native development
+
+### Content Focus
+- **Decision**: Start with photo/image sharing (visual content)
+- **Rationale**: Easier mobile UX, clear value vs social media
+- **Expansion**: Text, video, mixed media later
+
+### Monetization Model
+- **Decision**: NAAAS subscription model (not mobile app monetization)
+- **Rationale**: Align incentives with creator ownership
+- **Strategy**: Mobile app free, NAAAS infrastructure paid
+
+---
+
+## Summary
+
+The mobile strategy leverages NAAAS infrastructure to enable a new category of creator tools focused on **ownership over engagement**, **direct relationships over algorithmic discovery**, and **personal branding over platform dependency**.
+
+The key insight is using mobile convenience for content creation while deploying to owned web infrastructure for content consumption - getting the best of both mobile UX and web reach without platform dependency.
+
+**Next steps**: Validate the technical architecture with CLI/API development before committing to mobile app complexity.
