@@ -60,6 +60,84 @@ User downloads Dustagram app
 - Personal branding and customization possible
 - Direct creator-audience relationships
 
+## Anti-Social Media: Sentiment-Gated Communities
+
+### The Mental Health Innovation
+**Problem**: Traditional moderation forces humans to consume all negativity to moderate content.
+
+**Solution**: Sentiment analysis as content gating - good vibes flow automatically, negativity gets quarantined for selective review.
+
+### Key Features
+
+#### "Never Visit Moderation" Protection
+- **Admin mental health**: Don't force daily exposure to toxic content
+- **Automatic approval**: Positive sentiment content flows through instantly  
+- **Quarantine negativity**: Suspicious content held until admin chooses to engage
+- **Selective engagement**: Help individual users without drowning in garbage
+
+#### Targeted Help Without Trauma
+- Friend DMs: "My comment got stuck in moderation"
+- Admin checks **just that one comment**
+- No scrolling through feeds of toxicity to help one person
+- Preserves mental health while maintaining community support
+
+#### Automated Bad Actor Protection
+- User gets 3+ flagged comments in a week → auto-ban
+- Abnormal negativity levels trigger automatic responses
+- Community protection without human trauma exposure
+- Appeals process for false positives
+
+### Technical Implementation
+
+#### Multi-Tenant Sentiment Service
+- **AWS Comprehend**: ~$0.0001 per request
+- **Cost reality**: 1000 comments/day = $3/month
+- **Typical microblog**: 10-100 comments/day = $0.30-$3/month
+- **Shared service**: Single API integration serves all tenants
+- **Tenant customization**: Individual threshold configuration
+
+#### Architecture
+```
+Comment → NAAAS Shim → AWS Comprehend → Tenant-specific thresholds → Approve/Review
+```
+
+#### Tenant Configuration
+- Conservative community: Auto-approve >0.7 positive sentiment
+- Permissive community: Auto-approve >0.5 positive sentiment  
+- Custom toxicity thresholds per community
+- Admin override capabilities
+
+### Competitive Advantage
+
+#### Hidden Value Proposition
+This isn't just a moderation feature - it's **sustainable community management**:
+- **Scales without trauma**: Larger communities don't require more human suffering
+- **Protects community leaders**: Prevents moderator burnout and psychological damage
+- **Enables healthy growth**: Communities can scale without destroying admin mental health
+- **Appeals to burned-out creators**: Anyone destroyed by traditional social media moderation
+
+#### Market Positioning
+"Run a healthy community without drowning in negativity"
+- Target: Community builders, newsletter writers, creators
+- Value: Mental health preservation + community protection
+- Differentiation: Inverts traditional moderation paradigm
+
+### Integration with Creator Tools
+
+#### Mobile Publishing Flow
+```
+Creator publishes → Content auto-approved (positive sentiment)
+Community comments → Good vibes flow, negativity quarantined
+Creator experience → Never forced to see toxicity
+Selective moderation → Address specific issues when needed
+```
+
+#### Personal Site Benefits
+- **Clean comment sections**: Visitors see positive engagement
+- **Creator protection**: Site owner controls their mental health exposure
+- **Community standards**: Each personal site can tune sensitivity
+- **Authentic engagement**: Real feedback without algorithmic amplification of outrage
+
 ## Market Positioning
 
 ### Target Applications

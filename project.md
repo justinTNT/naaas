@@ -24,7 +24,7 @@ NAAAS acts as a **"Private VIP Entrance"** to this monolith:
 
 We wrap existing applications with a "Tenant Shim": a lightweight, secure, and isolated unikernel deployed per-tenant. The shim's responsibilities are strictly limited to the infrastructure layer:
 
-*   **TLS Termination:** Manages certificates for the tenant's domain.
+*   **TLS Termination:** Uses client-provided certificates for the tenant's domain.
 *   **Transparent Proxying:** Forwards all traffic to the upstream application without inspecting or modifying application-specific content (like `Authorization` headers or response bodies).
 *   **Rate Limiting:** Enforces simple, per-tenant request limits.
 *   **Lightweight Logging:** Emits structured access logs to `stdout`.

@@ -73,7 +73,7 @@ Our primary goal is to deliver a self-contained appliance that demonstrates the 
 *   **Goal:** Implement the core infrastructure features in the `naaas-shim`.
 *   **Key Components:** Enhance the `naaas-shim` and the `naaas-server` configuration options.
 *   **Workflow (Iterative, TDD):**
-    1.  **TLS Termination:** Configure a shim with a domain and certificate; test HTTPS access.
+    1.  **TLS Termination:** Configure a shim with client-provided certificate files; test HTTPS access.
     2.  **Rate Limiting:** Configure a rate limit; write a test that asserts a `429 Too Many Requests` response after the limit is exceeded.
     3.  **Lightweight Logging:** Verify that `curl`ing the shim produces a structured JSON log on the server's `stdout`.
     4.  **Config Serving:** Deploy a shim with a sample `app_config.json`; test that a `GET /config` request to the shim returns the correct JSON.

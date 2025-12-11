@@ -87,11 +87,11 @@ type TenantManager struct {
 **How to maximize adaptability:**
 ```go
 // Design EVERYTHING as interfaces, implement AWS first:
-type CertificateProvider interface {
-    GetCertificate(domain string) (*Certificate, error)
-    RenewCertificate(domain string) error
+type CertificateHandler interface {
+    LoadCertificate(domain string, certFiles CertificateFiles) (*Certificate, error)
+    ValidateCertificate(cert *Certificate) error
 }
-// Implementations: &ACMCertProvider{}, &LocalCertProvider{}
+// Implementations: &LocalCertHandler{} (BYOD: client provides cert files)
 
 type ProcessLauncher interface {
     LaunchProcess(config ProcessConfig) (*Process, error)
@@ -205,7 +205,7 @@ import (
 
 ### **Near Future Extensions (Sprints 3-4):**
 - ✅ **Dashboard backend** (serving the web UI APIs)
-- ✅ **TLS certificate management** 
+- ✅ **TLS certificate handling** (BYOD: accept client-provided certificates) 
 - ✅ **Rate limiting configuration**
 - ✅ **Log aggregation** (collecting from shims)
 - ✅ **Tenant configuration storage**
@@ -247,7 +247,7 @@ import (
 
 ### **Phase 3: AWS Alpha Deployment**
 1. **AWS EC2 deployment** - Use EC2ProcessLauncher for unikernel spawning
-2. **AWS ACM integration** - Use ACMCertProvider for TLS certificates  
+2. **Certificate handling** - Accept client-provided certificate files for BYOD deployment  
 3. **AWS CloudWatch** - Use CloudWatchMetrics for monitoring
 4. **AWS SSM** - Use SSMConfigStore for tenant configuration
 5. **Create AWS AMI** with naaas-server + dashboard pre-configured
@@ -277,7 +277,7 @@ import (
 - **Unknown cloud providers** (via pluggable interfaces)
 - **Unknown orchestrators** (Docker, K8s, Nomad, whatever comes next)
 - **Unknown monitoring systems** (Prometheus, DataDog, New Relic, etc.)
-- **Unknown certificate authorities** (Let's Encrypt, cloud CAs, internal CAs)
+- **Unknown certificate sources** (client-provided files, cloud CAs, internal enterprise CAs)
 - **Unknown storage backends** (local files, databases, cloud storage)
 
 **The key insight:** Design for **categories of integration**, not specific vendors.
