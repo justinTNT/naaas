@@ -8,7 +8,8 @@
 ✅ **Production Validated**: HTTP server live at http://3.1.210.183:3000  
 ✅ **Documentation Complete**: Full project vision and roadmap  
 ⚠️ **Current Gap**: Main components lack unit tests - need test infrastructure  
-🚧 **Active**: Building `naaas-server` control plane (Sprint 1)
+⚠️ **Design flaw**: maybe smarter to start with HAProxy then migrate to custom rust once the dust settles.
+**Active**: Building `naaas-server` control plane (Sprint 1)
 
 ## Quick Orientation
 
